@@ -1,0 +1,32 @@
+@host =  http://localhost:4000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjIwODQwMDAzfQ.kjkORCpGpdzX1fxM6peegkTywGnKrJ6IeEcsLL26JlQ
+
+GET {{host}}/users/
+Authorization: Bearer {{token}}
+
+###
+GET {{host}}/users/1
+
+###
+GET {{host}}/users/112312
+
+###
+POST {{host}}/users/register
+content-type: application/json
+
+{
+    "firstName": "Joe",
+    "lastName": "Doe",
+    "username": "jdoe2233",
+    "email": "jdoe2233@example.com",
+    "password": "abcd1234"
+}
+
+###
+POST {{host}}/users/login HTTP/1.1
+content-type: application/json
+
+{
+    "username": "jdoe2233",
+    "password": "abcd1234"
+}

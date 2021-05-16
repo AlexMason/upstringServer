@@ -1,0 +1,19 @@
+@host =  http://localhost:4000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjIxMTI5OTgzLCJleHAiOjE2MjEyMTYzODN9.8xFfRr6j1m9Y03pD47a_KBpmTtjsUbP2pL44vnBDlWA
+
+### Get top 20 recent topics
+GET {{host}}/topics/
+
+### Get by id
+GET {{host}}/topics/2
+
+###
+POST {{host}}/topics/ HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "Test title1",
+    "body": "lorem ipsum 2",
+    "status": "public"
+}

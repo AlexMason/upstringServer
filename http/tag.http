@@ -1,0 +1,10 @@
+@host =  http://localhost:4000
+POST {{host}}/tags/ HTTP/1.1
+content-type: application/json
+
+{
+    "name": "JavaScript"
+}
+
+###
+GET {{host}}/tags/ HTTP/1.1

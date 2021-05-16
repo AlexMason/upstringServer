@@ -1,0 +1,12 @@
+@host =  http://localhost:4000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjIwODQwMDAzfQ.kjkORCpGpdzX1fxM6peegkTywGnKrJ6IeEcsLL26JlQ
+
+###
+POST {{host}}/comments/ HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "body": "lorem ipsum4",
+    "topicId": 2
+}
