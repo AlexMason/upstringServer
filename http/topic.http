@@ -17,3 +17,5 @@ Authorization: Bearer {{token}}
     "body": "lorem ipsum 2",
     "status": "public"
 }
+###
+GET {{host}}/topics/test

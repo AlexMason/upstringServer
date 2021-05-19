@@ -3,4 +3,5 @@ module.exports = {
   Topic: require("./TopicController"),
   Comment: require("./CommentController"),
   Tag: require("./TagController"),
+  Rating: require("./RatingController"),
 };

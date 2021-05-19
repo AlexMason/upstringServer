@@ -12,6 +12,7 @@ app.use("/users", controllers.User);
 app.use("/topics", controllers.Topic);
 app.use("/comments", controllers.Comment);
 app.use("/tags", controllers.Tag);
+app.use("/ratings", controllers.Rating);
 
 dbConnection
   .authenticate()

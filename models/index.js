@@ -2,6 +2,8 @@ const Users = require("./UserModel");
 const Topics = require("./TopicModel");
 const Comments = require("./CommentModel");
 const Tags = require("./TagModel");
+const Ratings = require("./RatingModel");
+const TopicTags = require("./TopicTags");
 
 Users.hasMany(Topics, {
   foreignKey: { allowNull: false },
@@ -21,12 +23,22 @@ Topics.hasMany(Comments, {
   onDelete: "CASCADE",
 });
 
+Ratings.belongsTo(Topics, { constraints: false });
+Ratings.belongsTo(Comments, { constraints: false });
+
+Topics.hasMany(Ratings, { constraints: false });
+Comments.hasMany(Ratings, { constraints: false });
+Users.hasOne(Ratings);
+
 Topics.belongsToMany(Tags, {
-  through: "TopicTags",
+  through: TopicTags,
 });
 Tags.belongsToMany(Topics, {
-  through: "TopicTags",
+  through: TopicTags,
 });
+
+TopicTags.belongsTo(Topics);
+TopicTags.belongsTo(Tags);
 
 Comments.belongsTo(Users, {
   foreignKey: { allowNull: false },
@@ -42,4 +54,6 @@ module.exports = {
   Topics,
   Comments,
   Tags,
+  Ratings,
+  TopicTags,
 };

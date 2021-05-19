@@ -14,8 +14,4 @@ module.exports = db.define("topics", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  rating: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0,
-  },
 });

@@ -1,6 +1,13 @@
 const router = require("express").Router();
 const { validateJWT } = require("../middleware");
-const { Topics, Users, Comments, Tags } = require("../models");
+const {
+  Topics,
+  Users,
+  Comments,
+  Tags,
+  Ratings,
+  TopicTags,
+} = require("../models");
 
 /**
  * Get top 20 topics.
@@ -19,6 +26,8 @@ router.get("/", async (req, res) => {
           attributes: { exclude: ["password"] },
         },
         Tags,
+        Ratings,
+        Comments,
       ],
     });
 
@@ -29,6 +38,14 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/test", async (req, res) => {
+  let fakeTags = ["html", "css", "test"];
+
+  findOrCreateTags(fakeTags);
+
+  res.status(200).json({});
+});
+
 /**
  * Get an individual topic.
  */
@@ -37,7 +54,9 @@ router.get("/:id", async (req, res) => {
     const topic = await Topics.findByPk(req.params.id, {
       include: [
         { model: Users, attributes: { exclude: ["password"] } },
-        { model: Comments, include: [Users] },
+        { model: Comments, include: [Users, Ratings] },
+        { model: Ratings },
+        { model: Tags },
       ],
     });
 
@@ -52,7 +71,7 @@ router.get("/:id", async (req, res) => {
  * Create a topic.
  */
 router.post("/", validateJWT, (req, res) => {
-  const { title, body, status } = req.body;
+  const { title, body, status, selectedTags } = req.body;
   try {
     Topics.create({
       title,
@@ -60,6 +79,18 @@ router.post("/", validateJWT, (req, res) => {
       status,
       userId: req.user.id,
     }).then((topic) => {
+      findOrCreateTags(selectedTags).then((tags) => {
+        TopicTags.destroy({ where: { topicId: topic.id } });
+        TopicTags.bulkCreate(
+          tags.map((tag) => {
+            return {
+              tagId: tag[0].id,
+              topicId: topic.id,
+            };
+          })
+        );
+      });
+
       res.status(201).json({
         message: "Topic created.",
         topic,
@@ -75,17 +106,30 @@ router.post("/", validateJWT, (req, res) => {
  */
 router.put("/:id", validateJWT, async (req, res) => {
   try {
-    const { title, body, status } = req.body;
-    let topic = await Topics.findByPk(req.params.id);
+    const { title, body, status, selectedTags } = req.body;
+    let topic = await Topics.findByPk(req.params.id, { includes: TopicTags });
 
     topic.title = title;
     topic.body = body;
     topic.status = status;
 
+    findOrCreateTags(selectedTags).then((tags) => {
+      TopicTags.destroy({ where: { topicId: req.params.id } });
+      TopicTags.bulkCreate(
+        tags.map((tag) => {
+          return {
+            tagId: tag[0].id,
+            topicId: req.params.id,
+          };
+        })
+      );
+    });
+
     topic.save();
 
     res.status(200).json({ topic });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ err });
   }
 });
@@ -106,3 +150,14 @@ router.delete("/:id", validateJWT, async (req, res) => {
 });
 
 module.exports = router;
+
+findOrCreateTags = (queryTags) => {
+  return Promise.all(
+    queryTags.map(async (tag) => {
+      return await Tags.findOrCreate({
+        where: { name: tag },
+        defaults: { name: tag },
+      });
+    })
+  );
+};
