@@ -14,9 +14,13 @@ router.post("/comment/:id", validateJWT, async (req, res) => {
     });
 
     if (curRating) {
-      //update
-      curRating.positive = positive;
-      curRating.save();
+      //update or delete
+      if (curRating.positive === positive) {
+        curRating.destroy();
+      } else {
+        curRating.positive = positive;
+        curRating.save();
+      }
     } else {
       //new
       Ratings.create({
@@ -45,8 +49,12 @@ router.post("/topic/:id", validateJWT, async (req, res) => {
 
     if (curRating) {
       //update
-      curRating.positive = positive;
-      curRating.save();
+      if (curRating.positive === positive) {
+        curRating.destroy();
+      } else {
+        curRating.positive = positive;
+        curRating.save();
+      }
     } else {
       //new
       Ratings.create({
