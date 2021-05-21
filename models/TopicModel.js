@@ -7,7 +7,7 @@ module.exports = db.define("topics", {
     allowNull: false,
   },
   body: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: false,
   },
   status: {

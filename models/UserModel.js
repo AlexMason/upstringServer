@@ -28,6 +28,7 @@ module.exports = db.define("users", {
     allowNull: false,
   },
   role: {
+    //ROLES: 0: user, 1: moderator, 2: admin
     type: DataTypes.INTEGER,
     defaultValue: 0,
   },

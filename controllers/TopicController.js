@@ -109,6 +109,12 @@ router.put("/:id", validateJWT, async (req, res) => {
     const { title, body, status, selectedTags } = req.body;
     let topic = await Topics.findByPk(req.params.id, { includes: TopicTags });
 
+    if (topic.userId !== req.user.id || req.user.role !== 2) {
+      res.status(403).json({
+        message: "You are not permitted do this action.",
+      });
+    }
+
     topic.title = title;
     topic.body = body;
     topic.status = status;
