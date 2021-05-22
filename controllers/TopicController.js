@@ -72,6 +72,7 @@ router.get("/:id", async (req, res) => {
  */
 router.post("/", validateJWT, (req, res) => {
   const { title, body, status, selectedTags } = req.body;
+
   try {
     Topics.create({
       title,
@@ -109,7 +110,7 @@ router.put("/:id", validateJWT, async (req, res) => {
     const { title, body, status, selectedTags } = req.body;
     let topic = await Topics.findByPk(req.params.id, { includes: TopicTags });
 
-    if (topic.userId !== req.user.id || req.user.role !== 2) {
+    if (topic.userId !== req.user.id && req.user.role !== 2) {
       res.status(403).json({
         message: "You are not permitted do this action.",
       });
@@ -147,12 +148,40 @@ router.delete("/:id", validateJWT, async (req, res) => {
   try {
     let topic = await Topics.findByPk(req.params.id);
 
+    if (topic.userId !== req.user.id && req.user.role !== 2) {
+      res.status(403).json({
+        message: "You are not permitted do this action.",
+      });
+    }
+
     topic.destroy();
 
     res.status(200).json({ message: "Topic deleted" });
   } catch (err) {
     res.status(500).json({ err });
   }
+});
+
+/**
+ * Lock a topic.
+ */
+
+router.post("/lock/:id", validateJWT, async (req, res) => {
+  try {
+    let topic = await Topics.findByPk(req.params.id);
+
+    if (req.user.role < 1) {
+      res.status(403).json({
+        message: "You are not permitted do this action.",
+      });
+    }
+
+    let { locked } = req.body;
+
+    topic.status = locked ? "locked" : "public";
+
+    topic.save();
+  } catch (err) {}
 });
 
 module.exports = router;
