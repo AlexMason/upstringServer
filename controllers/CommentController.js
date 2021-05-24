@@ -40,6 +40,12 @@ router.put("/:id", validateJWT, async (req, res) => {
     let comment = await Comments.findByPk(req.params.id);
 
     if (comment) {
+      if (comment.userId !== req.user.id && req.user.role !== 2) {
+        res.status(403).json({
+          message: "You are not permitted do this action.",
+        });
+      }
+
       comment.body = req.body.body;
 
       comment.save();
@@ -59,6 +65,12 @@ router.delete("/:id", validateJWT, async (req, res) => {
     let comment = await Comments.findByPk(req.params.id);
 
     if (comment) {
+      if (comment.userId !== req.user.id && req.user.role !== 2) {
+        res.status(403).json({
+          message: "You are not permitted do this action.",
+        });
+      }
+
       comment.destroy();
     }
 

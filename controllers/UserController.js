@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const { UniqueConstraintError } = require("sequelize");
 const { validateJWT } = require("../middleware");
-const { Users } = require("../models");
+const { Users, Topics, Comments } = require("../models");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -12,8 +12,37 @@ router.get("/", validateJWT, (req, res) => {
       email: req.user.email,
       name: req.user.name,
       username: req.user.username,
+      role: req.user.role,
     },
   });
+});
+
+router.get("/topics/:id", async (req, res) => {
+  try {
+    let topics = await Topics.findAll({
+      where: {
+        userId: req.params.id,
+      },
+    });
+
+    res.status(200).json(topics);
+  } catch (err) {
+    res.status(500).json({ err });
+  }
+});
+
+router.get("/comments/:id", async (req, res) => {
+  try {
+    let comments = await Comments.findAll({
+      where: {
+        userId: req.params.id,
+      },
+    });
+
+    res.status(200).json(comments);
+  } catch (err) {
+    res.status(500).json({ err });
+  }
 });
 
 router.get("/:id", async (req, res) => {

@@ -18,7 +18,7 @@ router.get("/", async (req, res) => {
       where: {
         status: "public",
       },
-      limit: 20,
+      limit: 10,
       order: [["createdAt", "DESC"]],
       include: [
         {
@@ -26,6 +26,58 @@ router.get("/", async (req, res) => {
           attributes: { exclude: ["password"] },
         },
         Tags,
+        Ratings,
+        Comments,
+      ],
+    });
+
+    res.status(200).json(topics);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
+
+router.get("/page/:id", async (req, res) => {
+  try {
+    const topics = await Topics.findAll({
+      where: {
+        status: "public",
+      },
+      limit: 10,
+      offset: 10 * parseInt(req.params.id),
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: Users,
+          attributes: { exclude: ["password"] },
+        },
+        Tags,
+        Ratings,
+        Comments,
+      ],
+    });
+
+    res.status(200).json(topics);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
+
+router.get("/tag/:tag", async (req, res) => {
+  try {
+    const topics = await Topics.findAll({
+      where: {
+        status: "public",
+      },
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: Users,
+          attributes: { exclude: ["password"] },
+        },
+        { model: Tags, where: { name: req.params.tag } },
         Ratings,
         Comments,
       ],
@@ -165,7 +217,6 @@ router.delete("/:id", validateJWT, async (req, res) => {
 /**
  * Lock a topic.
  */
-
 router.post("/lock/:id", validateJWT, async (req, res) => {
   try {
     let topic = await Topics.findByPk(req.params.id);
@@ -181,7 +232,10 @@ router.post("/lock/:id", validateJWT, async (req, res) => {
     topic.status = locked ? "locked" : "public";
 
     topic.save();
-  } catch (err) {}
+  } catch (err) {
+    //TODO: send status
+    res.status(500);
+  }
 });
 
 module.exports = router;

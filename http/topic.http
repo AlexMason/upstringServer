@@ -18,4 +18,6 @@ Authorization: Bearer {{token}}
     "status": "public"
 }
 ###
-GET {{host}}/topics/test
+GET {{host}}/topics/page/1
+###
+GET {{host}}/topics/tag/typescript
