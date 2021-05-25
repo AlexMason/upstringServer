@@ -47,6 +47,7 @@ router.put("/:id", validateJWT, async (req, res) => {
       }
 
       comment.body = req.body.body;
+      comment.stickied = req.body.stickied;
 
       comment.save();
     }
